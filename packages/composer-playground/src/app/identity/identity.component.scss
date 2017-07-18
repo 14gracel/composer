@@ -30,6 +30,7 @@ identity {
             display: flex;
             padding: 8px;
             height:45px;
+            border-left: $space-small solid $first-highlight;
             cursor: pointer;
 
             &:hover {

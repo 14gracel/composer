@@ -1,38 +1,31 @@
 <section class="main-view">
     <div class="flex">
         <div class="flex-container">
-            <h1 class="flex">My Wallet</h1>
+            <h1 class="flex">My IDs for {{businessNetworkName}}</h1>
 
-            <button type="button" class="secondary" (click)="addId()">
-                <span>+ Add to Wallet</span>
-            </button>
-
-            <button type="button" class="primary" (click)="issueNewId()">
-                <span>+ Issue New Identity</span>
+            <button type="button" class="secondary" (click)="issueNewId()">
+                <span>+ Issue New ID</span>
             </button>
         </div>
 
         <div class="identity-title">
-            <div class="id">ID Name</div>
-            <div class="status">Status</div>
+            <div class="flex">ID Name</div>
+            <div class="flex">Issued to</div>
+            <div class="flex">Issued date</div>
+            <div class="flex">Status</div>
+            <div class="flex"></div>
         </div>
-        <div class="identity" *ngFor="let id of identities" (click)="setCurrentIdentity(id)">
-            <div class="id">
-                {{id}}
+        <div class="identity" *ngFor="let id of identities" (click)="setCurrentIdentity(id)" [ngClass]="{'active': id.getIdentifier()===currentIdentity}">
+            <div class="flex">
+                {{id.name}}
             </div>
-            <div class="flex" *ngIf="id===currentIdentity">
-                In use
-                <svg class="standard-icon" aria-hidden="true">
-                    <use xlink:href="#icon-selected_16"></use>
-                </svg>
-            </div>
-            <div class="flex" *ngIf="id!==currentIdentity">
-                <i>In my wallet</i>
-            </div>
-            <div class="actions" *ngIf="id!==currentIdentity">
+            <div class="flex">{{id.participant.getIdentifier()}}</div>
+            <div class="flex">Today</div>
+            <div class="flex">{{id.state}}</div>
+            <div class="flex">
                 <button class="clear" (click)="setCurrentIdentity(id)">Use now</button>
                 <button class="clear" (click)="removeIdentity(id); $event.stopPropagation()">Remove</button>
-            </div>
+            </div>          
         </div>
     </div>
     <app-footer></app-footer>
