@@ -23,6 +23,8 @@ export class IdentityComponent implements OnInit {
     identities: string[];
     currentIdentity: string = null;
 
+    businessNetworkName: string = null;
+
     constructor(private modalService: NgbModal,
                 private alertService: AlertService,
                 private identityService: IdentityService,
@@ -33,13 +35,16 @@ export class IdentityComponent implements OnInit {
     }
 
     ngOnInit(): Promise<any> {
+        this.businessNetworkName = this.clientService.getBusinessNetworkName();
         return this.loadIdentities();
     }
 
     loadIdentities() {
         return this.identityService.getCurrentIdentities()
             .then((currentIdentities) => {
-                this.identities = currentIdentities;
+                this.identities = currentIdentities.map((identity) => {
+                    return identity;
+                });
 
                 return this.identityService.getCurrentIdentity();
             })
@@ -49,6 +54,23 @@ export class IdentityComponent implements OnInit {
             .catch((error) => {
                 this.alertService.errorStatus$.next(error);
             });
+
+        // return this.clientService.getBusinessNetworkConnection()
+        //     .getAssetRegistry('org.hyperledger.composer.system.Identity')
+        //     .then((identityRegistry) => {
+        //         return identityRegistry.getAll();
+        //     })
+        //     .then((identities) => {
+        //         this.identities = identities;
+        //         console.log(this.identities);
+        //         return this.identityService.getCurrentIdentity();
+        //     })
+        //     .then((currentIdentity) => {
+        //         this.currentIdentity = currentIdentity;
+        //     })
+        //     .catch((error) => {
+        //         this.alertService.errorStatus$.next(error);
+        //     });
     }
 
     addId() {
@@ -82,13 +104,13 @@ export class IdentityComponent implements OnInit {
             });
     }
 
-    setCurrentIdentity(newIdentity: string) {
-        if (this.currentIdentity === newIdentity) {
+    setCurrentIdentity(newIdentity) {
+        if (this.currentIdentity === newIdentity.getIdentifier()) {
             return Promise.resolve();
         }
 
-        this.identityService.setCurrentIdentity(newIdentity);
-        this.currentIdentity = newIdentity;
+        this.identityService.setCurrentIdentity(newIdentity.getIdentifier());
+        this.currentIdentity = newIdentity.getIdentifier();
 
         this.alertService.busyStatus$.next({title: 'Reconnecting...', text: 'Using identity ' + this.currentIdentity});
         return this.clientService.ensureConnected(true)
@@ -101,9 +123,9 @@ export class IdentityComponent implements OnInit {
             });
     }
 
-    removeIdentity(userID: string) {
+    removeIdentity(identity) {
         let profileName = this.connectionProfileService.getCurrentConnectionProfile();
-        return this.walletService.removeFromWallet(profileName, userID)
+        return this.walletService.removeFromWallet(profileName, identity.getIdentifier())
             .then(() => {
                 return this.loadIdentities();
             })

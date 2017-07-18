@@ -5,6 +5,7 @@ import { BehaviorSubject, Observable } from 'rxjs/Rx';
 import { Logger } from 'composer-common';
 import { ConnectionProfileService } from './connectionprofile.service';
 import { WalletService } from './wallet.service';
+import { ClientService } from './../services/client.service';
 
 @Injectable()
 export class IdentityService {
